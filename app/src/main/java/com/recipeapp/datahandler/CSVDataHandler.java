@@ -3,7 +3,9 @@ package com.recipeapp.datahandler;
 import com.recipeapp.model.Recipe;
 import com.recipeapp.model.Ingredient;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -50,10 +52,27 @@ public class CSVDataHandler implements DataHandler {
         
     
 
-    @Override
+    // 新しいレシピをrecipes.csvに追加
     public void writeData(Recipe recipe) throws IOException {
-        // 実装は後で行うので、何もしない
+        // レシピの名前と材料をカンマ区切りで1行にしてファイルに書き込む処理
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            // レシピ名を取得
+            StringBuilder line = new StringBuilder(recipe.getName());
+
+            // 材料をカンマ区切りで追加
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                line.append(",").append(ingredient.getName());
+            }
+
+            // 書き込む行をファイルに追加
+            writer.write(line.toString());
+            writer.newLine(); // 新しい行を追加
+        } catch (IOException e) {
+            // IOExceptionが発生した場合は再スロー
+            throw new IOException("Error writing to file: " + e.getMessage());
+        }
     }
+
 
     @Override
     public ArrayList<Recipe> searchData(String keyword) throws IOException {
